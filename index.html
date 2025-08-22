@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Messenger</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <div class="logo">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h1>Real-Time Messenger</h1>
+                    <p>Connect with friends instantly, no backend required!</p>
+                </div>
+                
+                <div class="connection-options">
+                    <div class="option-card" onclick="showDirectConnect()">
+                        <i class="fas fa-wifi"></i>
+                        <h3>Direct Connect</h3>
+                        <p>Connect directly to a friend using a connection code</p>
+                    </div>
+                    
+                    <div class="option-card" onclick="showDemoMode()">
+                        <i class="fas fa-play-circle"></i>
+                        <h3>Demo Mode</h3>
+                        <p>Try the app with simulated conversations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direct Connect Screen -->
+        <div id="directConnectScreen" class="screen hidden">
+            <div class="connect-card">
+                <div class="connect-header">
+                    <button class="back-btn" onclick="showWelcome()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2>Direct Connection</h2>
+                </div>
+                
+                <div class="connect-options">
+                    <div class="connect-option">
+                        <h3>Create Connection</h3>
+                        <p>Generate a code for your friend to join</p>
+                        <button class="btn btn-primary" onclick="createConnection()">
+                            <i class="fas fa-plus"></i> Create Connection
+                        </button>
+                    </div>
+                    
+                    <div class="connect-option">
+                        <h3>Join Connection</h3>
+                        <p>Enter your friend's connection code</p>
+                        <div class="input-group">
+                            <input type="text" id="connectionCode" placeholder="Enter connection code" maxlength="6">
+                            <button class="btn btn-primary" onclick="joinConnection()">
+                                <i class="fas fa-sign-in-alt"></i> Join
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Screen -->
+        <div id="chatScreen" class="chat-screen hidden">
+            <div class="chat-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="showWelcome()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-info">
+                        <h3 id="chatTitle">Direct Message</h3>
+                        <span class="connection-status" id="connectionStatus">
+                            <i class="fas fa-circle"></i> Connecting...
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <button class="btn btn-icon" onclick="toggleUserList()">
+                        <i class="fas fa-users"></i>
+                    </button>
+                    <button class="btn btn-icon" onclick="showSettings()">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <!-- User List Sidebar -->
+                <div id="userListSidebar" class="user-list-sidebar hidden">
+                    <div class="sidebar-header">
+                        <h4>Connected Users</h4>
+                        <button class="close-btn" onclick="toggleUserList()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="user-list" id="userList">
+                        <!-- Users will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Main Chat Area -->
+                <div class="main-chat">
+                    <div class="messages-container" id="messagesContainer">
+                        <!-- Messages will be populated here -->
+                    </div>
+                    
+                    <div class="typing-indicator" id="typingIndicator">
+                        <!-- Typing indicators will appear here -->
+                    </div>
+
+                    <div class="message-input-container">
+                        <form id="messageForm" class="message-form">
+                            <div class="input-group">
+                                <button type="button" class="btn btn-icon" onclick="toggleEmojiPicker()">
+                                    <i class="fas fa-smile"></i>
+                                </button>
+                                <input 
+                                    type="text" 
+                                    id="messageInput" 
+                                    placeholder="Type your message..." 
+                                    autocomplete="off"
+                                >
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Modal -->
+        <div id="connectionModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Connection Code</h3>
+                    <button class="close-btn" onclick="closeConnectionModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="connection-code-display">
+                        <div class="code" id="connectionCodeDisplay">ABC123</div>
+                        <button class="btn btn-secondary" onclick="copyConnectionCode()">
+                            <i class="fas fa-copy"></i> Copy Code
+                        </button>
+                    </div>
+                    <p class="help-text">
+                        Share this code with your friend. They can use it to join your chat.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Settings</h3>
+                    <button class="close-btn" onclick="closeSettingsModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label>Username</label>
+                        <input type="text" id="usernameSetting" placeholder="Enter username">
+                    </div>
+                    <div class="setting-item">
+                        <label>Theme</label>
+                        <select id="themeSetting">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Notifications</label>
+                        <input type="checkbox" id="notificationsSetting">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()">
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emoji Picker -->
+        <div id="emojiPicker" class="emoji-picker hidden">
+            <div class="emoji-grid">
+                <span onclick="insertEmoji('😊')">😊</span>
+                <span onclick="insertEmoji('😂')">😂</span>
+                <span onclick="insertEmoji('❤️')">❤️</span>
+                <span onclick="insertEmoji('👍')">👍</span>
+                <span onclick="insertEmoji('🎉')">🎉</span>
+                <span onclick="insertEmoji('🔥')">🔥</span>
+                <span onclick="insertEmoji('😎')">😎</span>
+                <span onclick="insertEmoji('🤔')">🤔</span>
+                <span onclick="insertEmoji('👋')">👋</span>
+                <span onclick="insertEmoji('💯')">💯</span>
+                <span onclick="insertEmoji('✨')">✨</span>
+                <span onclick="insertEmoji('🚀')">🚀</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(error => console.log('ServiceWorker registration failed'));
+        }
+    </script>
+
+    <!-- Main App Script -->
+    <script src="app.js"></script>
+</body>
+</html>
